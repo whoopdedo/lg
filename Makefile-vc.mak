@@ -220,7 +220,7 @@ LG_LIBD = lgd.lib
 ALL:	$(LG_LIB) $(LG_LIBD)
 
 clean:
-	del /q $(LG_OBJS) $(IID_OBJS) $(LG_LIB)
+	del /q $(LG_OBJS) $(LG_OBJSD) $(IID_OBJS) $(LG_LIB) $(LG_LIBD)
 
 .cpp.obj:
 	$(cc) $(CXXFLAGS) $(CXXNDEBUG) $(DEFINES) $(INCLUDES) -Fo$@ -c $<

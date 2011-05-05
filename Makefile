@@ -240,7 +240,7 @@ LG_OBJSD = lg-d.o scrmsgs-d.o refcnt-d.o iids.o
 ALL:	$(LG_LIB) $(LG_LIBD)
 
 clean:
-	$(RM) $(LG_OBJS)
+	$(RM) $(LG_OBJS) $(LG_OBJSD) $(IID_OBJS) $(LG_LIB) $(LG_LIBD)
 
 stamp: $(LG_SRCS) $(LG_HEADERS)
 	$(RM) lg/stamp-*
