@@ -1063,7 +1063,7 @@ interface IPhysSrv : IScriptServiceBase
  *  	: object - Object to launch from.
  *  	: object - Archetype to emit.
  *  	: float - Velocity scale of projectile.
- *  	: int - 1=NoPhysics, 2=PushOut, 4=RelativeVelocity, 8=Gravity.
+ *  	: int - 1=ZeroVel, 2=PushOut, 4=RelativeVelocity, 8=Gravity, 512=TellAI, 1024=NoPhysics. 
  *  	: const cScrVec & - Initial velocity. Will be added to the velocity inherited from the archetype or emitter.
  */
 	STDMETHOD_(object*,LaunchProjectile)(object &,object,object,float,int,const cScrVec &) PURE;

@@ -713,9 +713,11 @@ enum eFieldType
 	kFieldTypeVector,
 	kFieldTypeFloat,
 	kFieldTypeFixed,	// 16.16 bits (multiply by 65536)
+	// Following are SS2/T2 only
 	kFieldTypeFixVec,
 	kFieldTypeDouble,
-// FIXME: may be missing a few here, check against all versions
+	kFieldTypeRGBA,
+	kFieldTypeDoubleVec,
 	kFieldTypeAng,		// 180.0 <-> 32768
 	kFieldTypeAngVec
 };
