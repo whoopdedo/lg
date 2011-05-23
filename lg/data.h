@@ -63,7 +63,7 @@ DECLARE_INTERFACE_(IDataOps,IUnknown)
 	STDMETHOD_(sDatum*,CopyNew)(THIS_ sDatum&,sDatum) PURE;
 	STDMETHOD(Delete)(THIS_ sDatum) PURE;
 	STDMETHOD(Copy)(THIS_ sDatum*,sDatum) PURE;
-	STDMETHOD_(ulong,BlockSize)(THIS_ sDatum) PURE;
+	STDMETHOD_(long,BlockSize)(THIS_ sDatum) PURE;
 	STDMETHOD_(int,Version)(THIS) PURE;
 	STDMETHOD(Read)(THIS_ sDatum*,IDataOpsFile*,int) PURE;
 	STDMETHOD(Write)(THIS_ sDatum,IDataOpsFile*) PURE;
