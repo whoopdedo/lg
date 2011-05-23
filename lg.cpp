@@ -1,11 +1,10 @@
+#include "lg/lg.h"
+
 #include <algorithm>
-#include <cctype>
 #include <cstdarg>
 #include <cstring>
 #include <cstdio>
 #include <cmath>
-
-#include "lg/lg.h"
 
 extern IMalloc* g_pMalloc;
 
@@ -951,7 +950,8 @@ void cAnsiStr::Trim(void)
 	if (m_nDataLength == 0)
 		return;
 	char* start = m_pchData;
-	while (isspace(*start)) ++start;
+	while ((*start >= '\t' && *start <= '\r') || *start == ' ')
+		++start;
 	char* end = m_pchData + m_nDataLength;
 	if (end == start)
 	{
@@ -959,7 +959,9 @@ void cAnsiStr::Trim(void)
 		m_nDataLength = 0;
 		return;
 	}
-	while (isspace(*--end)) ;
+	do
+		--end;
+	while ((*end >= '\t' && *end <= '\r') || *end == ' ');
 	*++end = '\0';
 	if (start != m_pchData)
 		memmove(m_pchData, start, end - start + 1);
