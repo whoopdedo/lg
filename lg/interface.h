@@ -145,7 +145,7 @@ public:
 	SInterface& operator=(const SInterface& __x) NO_THROW
 	{
 		_IFace* pTemp;
-		if (pTemp = __x.get())
+		if ((pTemp = __x.get()))
 			pTemp->AddRef();
 		if (m_pIFace)
 			m_pIFace->Release();
