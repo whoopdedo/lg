@@ -367,13 +367,23 @@ interface IDarkGameSrv : IScriptServiceBase
  *  	: int - The page number of the location.
  *  	: int - The room number of the location.
  */
-	STDMETHOD_(int,GetAutomapLocationVisited)(int,int) PURE;
+	STDMETHOD_(Bool,GetAutomapLocationVisited)(int,int) PURE;
 /*** SetAutomapLocationVisited - Mark a region of the auto-map as having been visited.
  *  	= long - Returns 0.
  *  	: int - The page number of the location.
  *  	: int - The room number of the location.
  */
 	STDMETHOD(SetAutomapLocationVisited)(int,int) PURE;
+#ifdef _NEWDARK
+/*** SetNextMission - Change the number mission that will be loaded after this one ends.
+ *  	: int - The number of the next mission to load.
+ */
+	STDMETHOD_(void,SetNextMission)(int) PURE;
+/*** GetCurrentMission - Return the number of the current mission.
+ *  	= int - The current mission number.
+ */
+	STDMETHOD_(int,GetCurrentMission)(void) PURE;
+#endif
 #endif
 };
 DEFINE_IIDSTRUCT(IDarkGameSrv,IID_IDarkGameScriptService);
@@ -466,7 +476,7 @@ DEFINE_IIDSTRUCT(IDataSrv,IID_IDataScriptService);
 DECLARE_GUID(IDebugScriptService);
 interface IDebugScrSrv : IScriptServiceBase
 {
-/*** MPrint - Send string(s) to the mono.
+/*** MPrint - Send string(s) to the mono. Dromed only, but safe to use in game mode.
  *  	= long - Returns 0.
  *  	: cScrStr - A string to print.
  *  	: ...
@@ -483,6 +493,13 @@ interface IDebugScrSrv : IScriptServiceBase
  *  	= long - Returns 0.
  */
 	STDMETHOD(Break)(void) PURE;
+#ifdef _NEWDARK
+/*** Log - Send string(s) to the log.
+ *  	= long - Returns 0.
+ *  	: cScrStr - A string to print.
+ *  	: ...
+ */
+	STDMETHOD(Log)(const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &) PURE;
 };
 DEFINE_IIDSTRUCT(IDebugScrSrv,IID_IDebugScriptService);
 
@@ -1021,6 +1038,17 @@ interface IObjectSrv : IScriptServiceBase
  *  	: object - The object to query.
  */
 	STDMETHOD_(true_bool*,RenderedThisFrame)(true_bool &,object) PURE;
+#ifdef _NEWDARK
+#if (_DARKGAME == 3)
+	STDMETHOD_(object*,FindClosestObjectNamed)(object &, int,const char *) PURE;
+#endif
+/*** ObjectToWorld - Translate a relative vector to absolute.
+ *  	= cScrVec - The absolute position in world coordinates. Aggregate return.
+ *  	: object - The object to measure from.
+ *  	: const cScrVec & - Position relative to the location and rotation of the object.
+ */
+	STDMETHOD_(cScrVec*,ObjectToWorld)(cScrVec &, object,const cScrVec &) PURE;
+#endif
 };
 DEFINE_IIDSTRUCT(IObjectSrv,IID_IObjectScriptService);
 
@@ -1154,6 +1182,18 @@ interface IPhysSrv : IScriptServiceBase
  *  	: const object - The object to test.
  */
 	STDMETHOD_(Bool,ValidPos)(const object) PURE;
+#endif
+#ifdef _NEWDARK
+/*** IsRope - Test if an object is climbable.
+ *  	= Bool - True if the object is a rope.
+ *  	: const object & - The object to test.
+ */
+	STDMETHOD_(Bool,IsRope)(const object &) PURE;
+/*** GetClimbingObject - Get the ID of the climbable object something is attached to.
+ *  	: const object & - The object that is attached. Typically the Player.
+ *  	: object & - Returns the climbable object or OBJ_NULL.
+ */
+	STDMETHOD_(void,GetClimbingObject)(const object &,object &) PURE;
 #endif
 };
 DEFINE_IIDSTRUCT(IPhysSrv,IID_IPhysicsScriptService);
@@ -2297,5 +2337,103 @@ interface IWeaponSrv : IScriptServiceBase
 };
 DEFINE_IIDSTRUCT(IWeaponSrv,IID_IWeaponScriptService);
 
+#ifdef _NEWDARK'
+// TODO this needs a IID
+interface IDarkOverlayHandler : IUnknown
+{
+	STDMETHOD_(void,DrawHUD)(void) PURE;
+	STDMETHOD_(void,DrawTOverlay)(void) PURE;
+	STDMETHOD_(void,OnUIEnterMode)(void) PURE;
+};
+enum eStyleColorKind
+{
+	kStyleColorFG,
+	kStyleColorBG,
+	kStyleColorText,
+	kStyleColorHilite,
+	kStyleColorDim,
+	kStyleColorFG2,
+	kStyleColorBG2,
+	kStyleColorBorder,
+	kStyleColorWhite,
+	kStyleColorBlack,
+	kStyleColorXOR,
+	kStyleColorBevelLight,
+	kStyleColorBevelDark
+}
+DECLARE_GUID(IDarkOverlayScriptService);
+interface IDarkOverlaySrv : IDarkOverlayScriptService
+{
+	STDMETHOD_(void,SetHandler)(IDarkOverlayHandler *) PURE;
+	STDMETHOD_(int,GetBitmap)(const char *,const char *) PURE;
+	STDMETHOD_(void,FlushBitmap)(int) PURE;
+	STDMETHOD_(void,GetBitmapSize)(int,int &,int &) PURE;
+	STDMETHOD_(Bool,WorldToScreen)(const cScrVec &,int &,int &) PURE;
+	STDMETHOD_(Bool,GetObjectScreenBounds)(const object &,int &,int &,int &,int &) PURE;
+	STDMETHOD_(int,CreateTOverlayItem)(int,int,int,int,int,Bool) PURE;
+	STDMETHOD_(int,CreateTOverlayItemFromBitmap)(int,int,int,int,Bool) PURE;
+	STDMETHOD_(void,DestroyTOverlayItem)(int) PURE;
+	STDMETHOD_(void,UpdateTOverlayAlpha)(int,int) PURE;
+	STDMETHOD_(void,UpdateTOverlayPosition)(int,int,int) PURE;
+	STDMETHOD_(void,UpdateTOverlaySize)(int,int,int) PURE;
+	STDMETHOD_(void,DrawBitmap)(int,int,int) PURE;
+	STDMETHOD_(void,DrawSubBitmap)(int,int,int,int,int,int,int) PURE;
+	STDMETHOD_(void,SetTextColorFromStyle)(eStyleColorKind) PURE;
+	STDMETHOD_(void,SetTextColor)(int,int,int) PURE;
+	STDMETHOD_(void,GetStringSize)(const char *,int &,int &) PURE;
+	STDMETHOD_(void,DrawString)(const char *,int,int) PURE;
+	STDMETHOD_(void,DrawLine)(int,int,int,int) PURE;
+	STDMETHOD_(void,FillTOverlay)(int,int) PURE;
+	STDMETHOD_(Bool,BeginTOverlayUpdate)(int) PURE;
+	STDMETHOD_(void,EndTOverlayUpdate)(void) PURE;
+	STDMETHOD_(void,DrawTOverlayItem)(int) PURE;
+};
+DEFINE_IIDSTRUCT(IDarkOverlaySrv,IID_IDarkOverlayScriptService);
+
+DECLARE_GUID(IEngineScriptService);
+interface IEngineSrv : IEngineScriptService
+{
+	STDMETHOD_(Bool,ConfigIsDefined)(const char *) PURE;
+	STDMETHOD_(Bool,ConfigGetInt)(const char *,int &) PURE;
+	STDMETHOD_(Bool,ConfigGetFloat)(const char *,float &) PURE;
+	STDMETHOD_(Bool,ConfigGetRaw)(const char *,cScrStr &) PURE;
+	STDMETHOD_(float,BindingGetFloat)(const char *) PURE;
+	STDMETHOD_(Bool,FindFileInPath)(const char *,const char *,cScrStr &) PURE;
+	STDMETHOD_(Bool,IsRunningDX6)(void) PURE;
+	STDMETHOD_(void,GetCanvasSize)(int &,int &) PURE;
+	STDMETHOD_(float,GetAspectRatio)(void) PURE;
+	STDMETHOD_(void,GetFog)(int &,int &,int &,float &) PURE;
+	STDMETHOD_(void,SetFot)(int,int,int,float) PURE;
+	STDMETHOD_(void,GetFogZone)(int,int &,int &,int &,float &) PURE;
+	STDMETHOD_(void,SetFogZone)(int,int,int,int,float) PURE;
+	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,cScrStr &,cScrVec &) PURE;
+	STDMETHOD_(void,SetWeather)(int,float,float,float,float,float,float,float,float,float,float,float,float,const char *,const cScrVec &) PURE;
+	STDMETHOD_(Bool,PortalRaycast)(const cScrVec &,const cScrVec &,cScrVec &) PURE;
+	STDMETHOD_(int,ObjRaycast)(const cScrVec &,const cScrVec &,cScrVec &,object &,Bool,object,object) PURE;
+};
+DEFINE_IIDSTRUCT(IEngineSrv,IID_IEngineScriptService);
+
+DECLARE_GUID(IShockOverlayScriptService);
+interface IShockOverlaySrv : IShockOverlayScriptService
+{
+};
+DEFINE_IIDSTRUCT(IShockOverlaySrv,IID_IShockOverlayScriptService);
+
+DECLARE_GUID(IVersionScriptService);
+interface IVersionSrv : IVersionScriptService
+{
+	STDMETHOD_(void,GetAppName)(Bool,cScrStr &) PURE;
+	STDMETHOD_(void,GetVersion)(int &,int &) PURE;
+	STDMETHOD_(int,IsEditor)(void) PURE;
+	STDMETHOD_(void,GetGame)(cScrStr &) PURE;
+	STDMETHOD_(void,GetGamsys)(cScrStr &) PURE;
+	STDMETHOD_(void,GetMap)(cScrStr &) PURE;
+	STDMETHOD(GetCurrentFM)(cScrStr &) PURE;
+	STDMETHOD(GetCurrentFMPath)(cScrStr &) PURE;
+	STDMETHOD_(void,FMizeRelativePath)(const char *,cScrStr &) PURE;
+	STDMETHOD_(void,FMizePath)(const char *,cScrStr &) PURE;
+};
+DEFINE_IIDSTRUCT(IVersionSrv,IID_IVersionScriptService);
+#endif
 
 #endif // _LG_SCRSERVICES_H

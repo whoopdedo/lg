@@ -393,4 +393,9 @@ DECLARE_GUID(IPropertyStats);
 DECLARE_GUID(IDamageScriptService);
 DECLARE_GUID(IInternalAI);
 DECLARE_GUID(IAIFrozenProperty);
+/* New Dark */
+DECLARE_GUID(IEngineScriptService);
+DECLARE_GUID(IVersionScriptService);
+DECLARE_GUID(IDarkOverlayScriptService);
+DECLARE_GUID(IShockOverlayScriptService);
 #endif

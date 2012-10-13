@@ -123,7 +123,8 @@ IID_SRCS = \
 	iids/containsys.cpp iids/coronaproperty.cpp iids/coverptproperty.cpp \
 	iids/creatureposeproperty.cpp iids/creatureproperty.cpp iids/creatureweaponloop.cpp \
 	iids/damagemodel.cpp iids/damagescriptservice.cpp iids/darkbaseclientsloop.cpp \
-	iids/darkgameclientsloop.cpp iids/darkgamescriptservice.cpp iids/darkpanelloop.cpp \
+	iids/darkgameclientsloop.cpp iids/darkgamescriptservice.cpp \
+	iids/darkoverlayscriptservice.cpp iids/darkpanelloop.cpp \
 	iids/darkrenderloop.cpp iids/darksimloop.cpp iids/darkuiscriptservice.cpp \
 	iids/dataops.cpp iids/dataopsfile.cpp iids/dataopsmemfile.cpp iids/datascriptservice.cpp \
 	iids/datasource.cpp iids/debugmalloc.cpp iids/debugmodeloop.cpp \
@@ -133,7 +134,8 @@ IID_SRCS = \
 	iids/drkpowerupsscriptservice.cpp iids/dyntexture.cpp iids/ecologyinfoproperty.cpp \
 	iids/editgeomloop.cpp iids/editmodeloop.cpp iids/editorapp.cpp iids/editorloop.cpp \
 	iids/edittools.cpp iids/edittrait.cpp iids/enginefeaturesclientsloop.cpp \
-	iids/enginefeaturesloop.cpp iids/enginefeaturesrendloop.cpp iids/esndtagproperty.cpp \
+	iids/enginefeaturesloop.cpp iids/enginefeaturesrendloop.cpp \
+	iids/enginescriptservice.cpp iids/esndtagproperty.cpp \
 	iids/expproperty.cpp iids/extralightproperty.cpp iids/faceproperty.cpp \
 	iids/facestateproperty.cpp iids/filevarloop.cpp iids/floatproperty.cpp \
 	iids/flowgroupproperty.cpp iids/frameanimationconfigproperty.cpp \
@@ -198,7 +200,8 @@ IID_SRCS = \
 	iids/shockaiscriptservice.cpp iids/shockbaseclientsloop.cpp iids/shockcamera.cpp \
 	iids/shockgameclientsloop.cpp iids/shockgamescriptservice.cpp \
 	iids/shockloadingloop.cpp iids/shockmasterloop.cpp iids/shockobjscriptservice.cpp \
-	iids/shockplayer.cpp iids/shockpsiscriptservice.cpp iids/shockrangedproperty.cpp \
+	iids/shockoverlayscriptservice iids/shockplayer.cpp \
+	iids/shockpsiscriptservice.cpp iids/shockrangedproperty.cpp \
 	iids/shockrender2loop.cpp iids/shockrenderloop.cpp iids/shocksimloop.cpp \
 	iids/shockweaponscriptservice.cpp iids/simfinishloop.cpp iids/simmanager.cpp \
 	iids/simtimeloop.cpp iids/sndapp.cpp iids/sndmixer.cpp iids/sndsample.cpp iids/sndsource.cpp \
@@ -217,7 +220,8 @@ IID_SRCS = \
 	iids/tweqlockstateproperty.cpp iids/tweqmodelsproperty.cpp \
 	iids/tweqsimpleproperty.cpp iids/tweqsimplestateproperty.cpp \
 	iids/tweqvectorproperty.cpp iids/tweqvectorstateproperty.cpp iids/uiapp.cpp \
-	iids/uiloop.cpp iids/vantageptproperty.cpp iids/vectorproperty.cpp iids/voiceoversys.cpp \
+	iids/uiloop.cpp iids/vantageptproperty.cpp iids/vectorproperty.cpp \
+	iids/versionscriptservice.cpp iids/voiceoversys.cpp \
 	iids/watercolorproperty.cpp iids/weaponoffsetproperty.cpp \
 	iids/weaponscriptservice.cpp iids/weaponskillsproperty.cpp iids/weatherproperty.cpp \
 	iids/winapp.cpp iids/winappadvisesink.cpp iids/windisplaydevice.cpp iids/winshell.cpp \
