@@ -2337,9 +2337,8 @@ interface IWeaponSrv : IScriptServiceBase
 };
 DEFINE_IIDSTRUCT(IWeaponSrv,IID_IWeaponScriptService);
 
-#ifdef _NEWDARK'
-// TODO this needs a IID
-interface IDarkOverlayHandler : IUnknown
+#ifdef _NEWDARK
+interface IDarkOverlayHandler
 {
 	STDMETHOD_(void,DrawHUD)(void) PURE;
 	STDMETHOD_(void,DrawTOverlay)(void) PURE;
