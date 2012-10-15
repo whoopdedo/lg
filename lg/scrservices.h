@@ -2340,8 +2340,14 @@ DEFINE_IIDSTRUCT(IWeaponSrv,IID_IWeaponScriptService);
 #ifdef _NEWDARK
 interface IDarkOverlayHandler
 {
+/*** DrawHUD - Called when the handler can draw HUD elements.
+ */
 	STDMETHOD_(void,DrawHUD)(void) PURE;
+/*** DrawTOverlay - Called when the handler can draw transparent overlay elements.
+ */
 	STDMETHOD_(void,DrawTOverlay)(void) PURE;
+/*** OnUIEnterMode - Called when initializing UI components and changing screen modes.
+ */
 	STDMETHOD_(void,OnUIEnterMode)(void) PURE;
 };
 enum eStyleColorKind
@@ -2361,7 +2367,7 @@ enum eStyleColorKind
 	kStyleColorBevelDark
 }
 DECLARE_GUID(IDarkOverlayScriptService);
-interface IDarkOverlaySrv : IDarkOverlayScriptService
+interface IDarkOverlaySrv : IScriptServiceBase
 {
 	STDMETHOD_(void,SetHandler)(IDarkOverlayHandler *) PURE;
 	STDMETHOD_(int,GetBitmap)(const char *,const char *) PURE;
@@ -2390,7 +2396,7 @@ interface IDarkOverlaySrv : IDarkOverlayScriptService
 DEFINE_IIDSTRUCT(IDarkOverlaySrv,IID_IDarkOverlayScriptService);
 
 DECLARE_GUID(IEngineScriptService);
-interface IEngineSrv : IEngineScriptService
+interface IEngineSrv : IScriptServiceBase
 {
 	STDMETHOD_(Bool,ConfigIsDefined)(const char *) PURE;
 	STDMETHOD_(Bool,ConfigGetInt)(const char *,int &) PURE;
@@ -2412,14 +2418,257 @@ interface IEngineSrv : IEngineScriptService
 };
 DEFINE_IIDSTRUCT(IEngineSrv,IID_IEngineScriptService);
 
-DECLARE_GUID(IShockOverlayScriptService);
-interface IShockOverlaySrv : IShockOverlayScriptService
+enum eShockCursorMode
 {
+	kSCM_Normal,
+	kSCM_DragObj,
+	kSCM_UseObj,
+	kSCM_Look,
+	kSCM_Psi,
+	kSCM_Split
+}
+interface IShockOverlayHandler : IDarkOverlayHandler
+{
+/*** CanEnableElement - Query the handler if an overlay panel should be displayed.
+ *  	= Bool - False if the overlay should be hidden.
+ *  	: int - ID of the overlay panel.
+ */
+	STDMETHOD_(Bool,CanEnableElement)(int) PURE;
+/*** IsMouseOver - Notify the handler of mouse movement.
+ *  	= Bool - True if the cursor is over a clickable UI element.
+ *  	: int - X coordinate of the mouse cursor.
+ *  	: int - Y coordinate of the mouse cursor.
+ */
+	STDMETHOD_(Bool,IsMouseOver)(int,int) PURE;
+/*** MouseClick - Notify the handler of a mouse click.
+ *  	= Bool - Returns true if the click was handled.
+ *  	: int - X coordinate of the mouse cursor.
+ *  	: int - Y coordinate of the mouse cursor.
+ */
+	STDMETHOD_(Bool,MouseClick)(int,int) PURE;
+/*** MouseDblClick - Notify the handler of a double-click.
+ *  	= Bool - Returns true if the click was handled.
+ *  	: int - X coordinate of the mouse cursor.
+ *  	: int - Y coordinate of the mouse cursor.
+ */
+	STDMETHOD_(Bool,MouseDblClick)(int,int) PURE;
+/*** MouseDragDrop - Notify the handler of a mouse drag event.
+ *  	= Bool - Returns true if the click was handled.
+ *  	: int - X coordinate of the mouse cursor.
+ *  	: int - Y coordinate of the mouse cursor.
+ *  	: Bool - Set to true on the first drag event, then false on subsequent events until the mouse button is released.
+ *  	: eShockCursorMode - The cursor interaction mode.
+ */
+	STDMETHOD_(Bool,MouseDragDrop)(int,int,Bool,eShockCursorMode)
+};
+DECLARE_GUID(IShockOverlayScriptService);
+interface IShockOverlaySrv : IScriptServiceBase
+{
+/*** SetHandler - Register a handler object to draw custom overlays. Only one custom handler can be set at a time.
+ *  	: IShockOverlayHandler - Pointer to an overlay handler instance. Pass NULL to clear the handler.
+ */
+	STDMETHOD_(void,SetHandler)(IShockOverlayHandler *) PURE;
+/*** SetKeyboardInputCapture - Send keyboard input to the overlay handler.
+ *  	: Bool - Set to true to enable capture.
+ */
+	STDMETHOD_(void,SetKeyboardInputCapture)(Bool) PURE;
+/*** GetBitmap - Load a bitmap file.
+ *  	= int - Returns a handle to the loaded bitmap, or -1.
+ *  	: const char * - The name of the bitmap file.
+ *  	: const char * - Resource path to look for the file in. Such as "iface".
+ */
+	STDMETHOD_(int,GetBitmap)(const char *,const char *path) PURE;
+/*** FlushBitmap - Release a bitmap.
+ *  	: int - The bitmap handle.
+ */
+	STDMETHOD_(void,FlushBitmap)(int) PURE;
+/*** GetBitmapSize - Gets the size of a bitmap.
+ *  	: int - The bitmap handle.
+ *  	: int & - The width of the bitmap.
+ *  	: int & - The height of the bitmap.
+ */
+	STDMETHOD_(void,GetBitmapSize)(int,int &,int &) PURE;
+/*** SetCustomFont - Load a font file.
+ *  	= Bool - Returns true on success.
+ *  	: int - The custom font style. See IShockOverlaySrv::SetFont.
+ *  	: const char * - The name of the font file.
+ *  	: const char * - Resource path to look for the file in. Such as "fonts".
+ */
+	STDMETHOD_(Bool,SetCustomFont)(int,const char *,const char *) PURE;
+/*** GetOverlayRect - Get the bounding rectangle of an overlay panel.
+ *  	: int - ID of the overlay.
+ *  	: int & - X coordinate of the left edge.
+ *  	: int & - Y coordinate of the top edge.
+ *  	: int & - X coordinate of the right edge.
+ *  	: int & - Y coordinate of the bottom edge.
+ */
+	STDMETHOD_(void,GetOverlayRect)(int,int &,int &,int &,int &) PURE;
+/*** GetCursorMode - Get the interaction mode of the mouse cursor.
+ *  	= eShockCursorMode - The current cursor mode.
+ */
+	STDMETHOD_(eShockCursorMode,GetCursorMode)(void) PURE;
+/*** ClearCursorMode - Set the cursor mode to normal, cancelling the current mode.
+ */
+	STDMETHOD_(void,ClearCursorMode)(void) PURE;
+/*** SetCursorBitmap - Change the cursor icon.
+ *  	= Bool - Returns true on success.
+ *  	: const char * - The name of the bitmap file, or NULL to use the default cursor.
+ *  	: const char * - Resource path to look for the file in. Such as "iface".
+ */
+	STDMETHOD_(Bool,SetCursorBitmap)(const char *,const char *) PURE;
+/*** SetInterfaceMouseOverObject - Set an object as the focus of the mouse cursor.
+ *  	: const object & - The object the cursor is pointing at.
+ */
+	STDMETHOD_(void,SetInterfaceMouseOverObject)(const object &) PURE;
+/*** GetInterfaceFocusObject - Get the object that is the focus of the mouse cursor.
+ *  	: object & - A variable reference that will be set to the current cursor object.
+ */
+	STDMETHOD_(void,GetInterfaceFocusObject)(object &) PURE;
+/*** OpenLookPopup - Show the "help" panel.
+ *  	: const object & - The object to show information about.
+ */
+	STDMETHOD_(void,OpenLookPopup)(const object &) PURE;
+/*** ToggleLookCursor - Turn on or off the "help" cursor mode. Also called look mode.
+ */
+	STDMETHOD_(void,ToggleLookCursor)(void) PURE;
+/*** StartObjectDragDrop - Begin dragging an object.
+ *  	= Bool - Returns true on success.
+ *  	: const object & - The object being dragged.
+ */
+	STDMETHOD_(Bool,StartObjectDragDrop)(const object &) PURE;
+/*** PlaySound - Play a UI schema.
+ *  	: const char * - A schema name.
+ */
+	STDMETHOD_(void,PlaySound)(const char *) PURE;
+/*** WorldToScreen - Translate a 3D point in the world to screen coordinates. Only valid while drawing an overlay.
+ *  	= Bool - Returns false if the point is offscreen.
+ *  	: const cScrVec & - A location in the world.
+ *  	: int & - X coordinate of the point on the screen.
+ *  	: int & - Y coordinate of the point on the screen.
+ */
+	STDMETHOD_(Bool,WorldToScreen)(const cScrVec &,int &,int &) PURE;
+/*** GetObjectScreenBounds - Get the rectange that surrounds an object as it appears onscreen.
+ *  	= Bool - Returns false if the object is not visible.
+ *  	: const object & - The object.
+ *  	: int & - X coordinate of the left edge.
+ *  	: int & - Y coordinate of the top edge.
+ *  	: int & - X coordinate of the right edge.
+ *  	: int & - Y coordinate of the bottom edge.
+ */
+	STDMETHOD_(Bool,GetObjectScreenBounds)(const object &,int &,int &,int &,int &) PURE;
+/*** CreateTOverlayItem - Create a new user-drawn UI overlay.
+ *  	= int - A handle to the overlay, or -1.
+ *  	: int - X coordinate of the left edge of the overlay.
+ *  	: int - Y coordinate of the top edge of the overlay.
+ *  	: int - Width of the overlay.
+ *  	: int - Height of the overlay.
+ *  	: int - Opacity level, 0..255
+ *  	: Bool - True if the background should be transparent.
+ */
+	STDMETHOD_(int,CreateTOverlayItem)(int,int,int,int,int,Bool) PURE;
+/*** CreateTOverlayItemFromBitmap - Use a bitmap as a UI overlay.
+ *  	= int - A handle to the overlay, or -1.
+ *  	: int - X coordinate of the left edge of the overlay.
+ *  	: int - Y coordinate of the top edge of the overlay.
+ *  	: int - Opacity level, 0..255
+ *  	: int - The bitmap handle.
+ *  	: Bool - True if the background should be transparent.
+ */
+	STDMETHOD_(int,CreateTOverlayItemFromBitmap)(int,int,int,int,Bool) PURE;
+/*** DestroyTOverlayItem - Releases the memory used by an overlay.
+ *  	: int - The overlay handle.
+ */
+	STDMETHOD_(void,DestroyTOverlayItem)(int) PURE;
+/*** UpdateTOverlayAlpha - Change the opacity of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - Opacity of the overlay.
+ */
+	STDMETHOD_(void,UpdateTOverlayAlpha)(int,int) PURE;
+/*** UpdateTOverlayPosition - Set the position of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - X coordinate of the left edge.
+ *  	: int - Y coordinate of the top edge.
+ */
+	STDMETHOD_(void,UpdateTOverlayPosition)(int,int,int) PURE;
+/*** UpdateTOverlaySize - Change the size of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - Width of the overlay.
+ *  	: int - Height of the overlay.
+ */
+	STDMETHOD_(void,UpdateTOverlaySize)(int,int,int) PURE;
+/*** DrawBitmap - Display a bitmap in a HUD or overlay.
+ *  	: int - The bitmap handle.
+ *  	: int - X coordinate of the left edge.
+ *  	: int - Y coordinate of the top edge.
+ */
+	STDMETHOD_(void,DrawBitmap)(int,int,int) PURE;
+/*** DrawSubBitmap - Display a cropped region from a bitmap.
+ *  	: int - The bitmap handle.
+ *  	: int - X coordinate of the left edge where the image is shown.
+ *  	: int - Y coordinate of the top edge where the image is shown.
+ *  	: int - X offset in the bitmap.
+ *  	: int - Y offset in the bitmap.
+ *  	: int - Width of the region.
+ *  	: int - Height of the region.
+ */
+	STDMETHOD_(void,DrawSubBitmap)(int,int,int,int,int,int,int) PURE;
+/*** DrawObjectIcon - Display an object as an icon.
+ *  	: const object & - The object to show.
+ *  	: int - X coordinate.
+ *  	: int - Y coordinate.
+ */
+	STDMETHOD_(void,DrawObjectIcon)(const object &,int,int) PURE;
+/*** SetFont - Change the current font style.
+ *  	: int - The font style. 0 = default, 1 = monospace, 2..5 are custom styles which are 0..3 when loaded with SetCustomFont.
+ */
+	STDMETHOD_(void,SetFont)(int) PURE;
+/*** SetTextColor - Change the current font color.
+ *  	: int - Red. If this is negative, the default color is used.
+ *  	: int - Green.
+ *  	: int - Blue.
+ */
+	STDMETHOD_(void,SetTextColor)(int,int,int) PURE;
+/*** GetStringSize - Measure the bounding box of a string in the current font.
+ *  	: const char * - The text to measure.
+ *  	: int - Width of the string.
+ *  	: int - Height of the string.
+ */
+	STDMETHOD_(void,GetStringSize)(const char *,int &,int &) PURE;
+/*** DrawString - Display a string in the current font.
+ *  	: const char * - The text to show.
+ *  	: int - X coordinate.
+ *  	: int - Y coordinate.
+ */
+	STDMETHOD_(void,DrawString)(const char *,int,int) PURE;
+/*** DrawLine - Draw a line in the current text color.
+ *  	: int - X coordinate of the start of the line.
+ *  	: int - Y coordinate of the start of the line.
+ *  	: int - X coordinate of the end of the line.
+ *  	: int - Y coordinate of the end of the line.
+ */
+	STDMETHOD_(void,DrawLine)(int,int,int,int) PURE;
+/*** FillTOverlay - Fill an overlay with a palette color.
+ *  	: int - Color from the standard palette.
+ *  	: int - Alpha channel. 0..255
+ */
+	STDMETHOD_(void,FillTOverlay)(int,int) PURE;
+/*** BeginTOverlayUpdate - Call before drawing on an overlay.
+ *  	= Bool - Returns true if the user can draw to the overlay.
+ *  	: int - The overlay handle.
+ */
+	STDMETHOD_(Bool,BeginTOverlayUpdate)(int) PURE;
+/*** EndTOverlayUpdate - Finish drawing an overlay.
+ */
+	STDMETHOD_(void,EndTOverlayUpdate)(void) PURE;
+/*** DrawTOverlayItem - Display an overlay.
+ *  	: int - The overlay handle.
+ */
+	STDMETHOD_(void,DrawTOverlayItem)(int) PURE;
 };
 DEFINE_IIDSTRUCT(IShockOverlaySrv,IID_IShockOverlayScriptService);
 
 DECLARE_GUID(IVersionScriptService);
-interface IVersionSrv : IVersionScriptService
+interface IVersionSrv : IScriptServiceBase
 {
 	STDMETHOD_(void,GetAppName)(Bool,cScrStr &) PURE;
 	STDMETHOD_(void,GetVersion)(int &,int &) PURE;
