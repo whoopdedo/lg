@@ -192,7 +192,7 @@ public:
 	double Dot(const mxs_vector& r) const;
 	cScrVec Cross(const mxs_vector& r) const;
 	double Distance(const mxs_vector& r) const;
-	static const float epsilon;
+	static const float epsilon = 0.00001f;
 	static const cScrVec Zero;
 };
 
