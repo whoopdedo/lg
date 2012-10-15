@@ -476,7 +476,7 @@ DEFINE_IIDSTRUCT(IDataSrv,IID_IDataScriptService);
 DECLARE_GUID(IDebugScriptService);
 interface IDebugScrSrv : IScriptServiceBase
 {
-/*** MPrint - Send string(s) to the mono. Dromed only, but safe to use in game mode.
+/*** MPrint - Send string(s) to the mono. DromEd only, but safe to use in game mode.
  *  	= long - Returns 0.
  *  	: cScrStr - A string to print.
  *  	: ...
@@ -2369,52 +2369,289 @@ enum eStyleColorKind
 DECLARE_GUID(IDarkOverlayScriptService);
 interface IDarkOverlaySrv : IScriptServiceBase
 {
+/*** SetHandler - Register a handler object to draw custom overlays. Only one custom handler can be set at a time.
+ *  	: IDarkOverlayHandler - Pointer to an overlay handler instance. Pass NULL to clear the handler.
+ */
 	STDMETHOD_(void,SetHandler)(IDarkOverlayHandler *) PURE;
+/*** GetBitmap - Load a bitmap file.
+ *  	= int - Returns a handle to the loaded bitmap, or -1.
+ *  	: const char * - The name of the bitmap file.
+ *  	: const char * - Resource path to look for the file in. Such as "iface".
+ */
 	STDMETHOD_(int,GetBitmap)(const char *,const char *) PURE;
+/*** FlushBitmap - Release a bitmap.
+ *  	: int - The bitmap handle.
+ */
 	STDMETHOD_(void,FlushBitmap)(int) PURE;
+/*** GetBitmapSize - Gets the size of a bitmap.
+ *  	: int - The bitmap handle.
+ *  	: int & - The width of the bitmap.
+ *  	: int & - The height of the bitmap.
+ */
 	STDMETHOD_(void,GetBitmapSize)(int,int &,int &) PURE;
+/*** WorldToScreen - Translate a 3D point in the world to screen coordinates. Only valid while drawing an overlay.
+ *  	= Bool - Returns false if the point is offscreen.
+ *  	: const cScrVec & - A location in the world.
+ *  	: int & - X coordinate of the point on the screen.
+ *  	: int & - Y coordinate of the point on the screen.
+ */
 	STDMETHOD_(Bool,WorldToScreen)(const cScrVec &,int &,int &) PURE;
+/*** GetObjectScreenBounds - Get the rectange that surrounds an object as it appears onscreen.
+ *  	= Bool - Returns false if the object is not visible.
+ *  	: const object & - The object.
+ *  	: int & - X coordinate of the left edge.
+ *  	: int & - Y coordinate of the top edge.
+ *  	: int & - X coordinate of the right edge.
+ *  	: int & - Y coordinate of the bottom edge.
+ */
 	STDMETHOD_(Bool,GetObjectScreenBounds)(const object &,int &,int &,int &,int &) PURE;
+/*** CreateTOverlayItem - Create a new user-drawn UI overlay.
+ *  	= int - A handle to the overlay, or -1.
+ *  	: int - X coordinate of the left edge of the overlay.
+ *  	: int - Y coordinate of the top edge of the overlay.
+ *  	: int - Width of the overlay.
+ *  	: int - Height of the overlay.
+ *  	: int - Opacity level, 0..255
+ *  	: Bool - True if the background should be transparent.
+ */
 	STDMETHOD_(int,CreateTOverlayItem)(int,int,int,int,int,Bool) PURE;
+/*** CreateTOverlayItemFromBitmap - Use a bitmap as a UI overlay.
+ *  	= int - A handle to the overlay, or -1.
+ *  	: int - X coordinate of the left edge of the overlay.
+ *  	: int - Y coordinate of the top edge of the overlay.
+ *  	: int - Opacity level, 0..255
+ *  	: int - The bitmap handle.
+ *  	: Bool - True if the background should be transparent.
+ */
 	STDMETHOD_(int,CreateTOverlayItemFromBitmap)(int,int,int,int,Bool) PURE;
+/*** DestroyTOverlayItem - Releases the memory used by an overlay.
+ *  	: int - The overlay handle.
+ */
 	STDMETHOD_(void,DestroyTOverlayItem)(int) PURE;
+/*** UpdateTOverlayAlpha - Change the opacity of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - Opacity of the overlay.
+ */
 	STDMETHOD_(void,UpdateTOverlayAlpha)(int,int) PURE;
+/*** UpdateTOverlayPosition - Set the position of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - X coordinate of the left edge.
+ *  	: int - Y coordinate of the top edge.
+ */
 	STDMETHOD_(void,UpdateTOverlayPosition)(int,int,int) PURE;
+/*** UpdateTOverlaySize - Change the size of an overlay.
+ *  	: int - The overlay handle.
+ *  	: int - Width of the overlay.
+ *  	: int - Height of the overlay.
+ */
 	STDMETHOD_(void,UpdateTOverlaySize)(int,int,int) PURE;
+/*** DrawBitmap - Display a bitmap in a HUD or overlay.
+ *  	: int - The bitmap handle.
+ *  	: int - X coordinate of the left edge.
+ *  	: int - Y coordinate of the top edge.
+ */
 	STDMETHOD_(void,DrawBitmap)(int,int,int) PURE;
+/*** DrawSubBitmap - Display a cropped region from a bitmap.
+ *  	: int - The bitmap handle.
+ *  	: int - X coordinate of the left edge where the image is shown.
+ *  	: int - Y coordinate of the top edge where the image is shown.
+ *  	: int - X offset in the bitmap.
+ *  	: int - Y offset in the bitmap.
+ *  	: int - Width of the region.
+ *  	: int - Height of the region.
+ */
 	STDMETHOD_(void,DrawSubBitmap)(int,int,int,int,int,int,int) PURE;
+/*** SetTextColorFromStyle - Change to a preset color.
+ *  	: eStyleColorKind - One of the predefined colors.
+ */
 	STDMETHOD_(void,SetTextColorFromStyle)(eStyleColorKind) PURE;
+/*** SetTextColor - Change the current font color.
+ *  	: int - Red. If this is negative, the default color is used.
+ *  	: int - Green.
+ *  	: int - Blue.
+ */
 	STDMETHOD_(void,SetTextColor)(int,int,int) PURE;
+/*** GetStringSize - Measure the bounding box of a string in the current font.
+ *  	: const char * - The text to measure.
+ *  	: int - Width of the string.
+ *  	: int - Height of the string.
+ */
 	STDMETHOD_(void,GetStringSize)(const char *,int &,int &) PURE;
+/*** DrawString - Display a string in the current font.
+ *  	: const char * - The text to show.
+ *  	: int - X coordinate.
+ *  	: int - Y coordinate.
+ */
 	STDMETHOD_(void,DrawString)(const char *,int,int) PURE;
+/*** DrawLine - Draw a line in the current text color.
+ *  	: int - X coordinate of the start of the line.
+ *  	: int - Y coordinate of the start of the line.
+ *  	: int - X coordinate of the end of the line.
+ *  	: int - Y coordinate of the end of the line.
+ */
 	STDMETHOD_(void,DrawLine)(int,int,int,int) PURE;
+/*** FillTOverlay - Fill an overlay with a palette color.
+ *  	: int - Color from the standard palette.
+ *  	: int - Alpha channel. 0..255
+ */
 	STDMETHOD_(void,FillTOverlay)(int,int) PURE;
+/*** BeginTOverlayUpdate - Call before drawing on an overlay.
+ *  	= Bool - Returns true if the user can draw to the overlay.
+ *  	: int - The overlay handle.
+ */
 	STDMETHOD_(Bool,BeginTOverlayUpdate)(int) PURE;
+/*** EndTOverlayUpdate - Finish drawing an overlay.
+ */
 	STDMETHOD_(void,EndTOverlayUpdate)(void) PURE;
+/*** DrawTOverlayItem - Display an overlay.
+ *  	: int - The overlay handle.
+ */
 	STDMETHOD_(void,DrawTOverlayItem)(int) PURE;
 };
 DEFINE_IIDSTRUCT(IDarkOverlaySrv,IID_IDarkOverlayScriptService);
 
+enum eObjRaycast
+{
+	kObjRaycastNearest,
+	kObjRaycastAny,
+	kObjRaycastFast
+};
 DECLARE_GUID(IEngineScriptService);
 interface IEngineSrv : IScriptServiceBase
 {
+/*** ConfigIsDefined - Test if a config variable has been set.
+ *  	= Bool - True if the variable has been set.
+ *  	: const char * - The config variable to test for.
+ */
 	STDMETHOD_(Bool,ConfigIsDefined)(const char *) PURE;
+/*** ConfigGetInt - Return the value of a config variable interpreted as an integer.
+ *  	= Bool - Returns true on success.
+ *  	: const char * - The config variable to retrieve.
+ *  	: int & - Address of a variable that will recieve the value.
+ */
 	STDMETHOD_(Bool,ConfigGetInt)(const char *,int &) PURE;
+/*** ConfigGetFloat - Return the value of a config variable interpreted as an floating-point number.
+ *  	= Bool - Returns true on success.
+ *  	: const char * - The config variable to retrieve.
+ *  	: float & - Address of a variable that will recieve the value.
+ */
 	STDMETHOD_(Bool,ConfigGetFloat)(const char *,float &) PURE;
+/*** ConfigGetRaw - Return the value of a config variable.
+ *  	= Bool - Returns true on success.
+ *  	: const char * - The config variable to retrieve.
+ *  	: cScrStr & - Address of a variable that will recieve the value.
+ */
 	STDMETHOD_(Bool,ConfigGetRaw)(const char *,cScrStr &) PURE;
+/*** BindingGetFloat - Return the floating-point value of a key-binding variable.
+ *      = float - The value of the variable.
+ *      : const char * - The name of the variable.
+ */
 	STDMETHOD_(float,BindingGetFloat)(const char *) PURE;
+/*** FindFileInPath - Search for a file in the paths defined by a config variable.
+ *  	= Bool - Returns true if the file is found.
+ *  	: const char * - The config variable set to the path list to search in.
+ *  	: const char * - The name of the file.
+ *  	: cScrStr & - Address of a variable that is set to the filename.
+ */
 	STDMETHOD_(Bool,FindFileInPath)(const char *,const char *,cScrStr &) PURE;
+/*** IsRunningDX6 - Check the version of DirectX.
+ *  	= Bool - True if the older DX6 mode is in use.
+ */
 	STDMETHOD_(Bool,IsRunningDX6)(void) PURE;
+/*** GetCanvasSize - Get the screen size.
+ *  	: int & - Width.
+ *  	: int & - Height.
+ */
 	STDMETHOD_(void,GetCanvasSize)(int &,int &) PURE;
+/*** GetAspectRatio - Get the screen aspect ratio.
+ *  	= float - Width / Height.
+ */
 	STDMETHOD_(float,GetAspectRatio)(void) PURE;
+/*** GetFog - Get the global fog parameters.
+ *  	: int & - Red.
+ *  	: int & - Green.
+ *  	: int & - Blue.
+ *  	: float & - Minimum distance.
+ */
 	STDMETHOD_(void,GetFog)(int &,int &,int &,float &) PURE;
-	STDMETHOD_(void,SetFot)(int,int,int,float) PURE;
+/*** SetFog - Change the global fog parameter.
+ *  	: int - Red.
+ *  	: int - Green.
+ *  	: int - Blue.
+ *  	: float - Minimum distance.
+ */
+	STDMETHOD_(void,SetFog)(int,int,int,float) PURE;
+/*** GetFogZone - Get fog parameters for a zone.
+ *  	: int - The fog zone. 1..8
+ *  	: int & - Red.
+ *  	: int & - Green.
+ *  	: int & - Blue.
+ *  	: float & - Minimum distance.
+ */
 	STDMETHOD_(void,GetFogZone)(int,int &,int &,int &,float &) PURE;
+/*** SetFogZone - Change the fog parameters for a zone.
+ *  	: int - The fog zone. 1..8
+ *  	: int - Red.
+ *  	: int - Green.
+ *  	: int - Blue.
+ *  	: float - Minimum distance.
+ */
 	STDMETHOD_(void,SetFogZone)(int,int,int,int,float) PURE;
+/*** GetWeather - Get the global weather parameters.
+ *  	: int & - Precipitation type.
+ *  	: float & - Precipitation frequency.
+ *  	: float & - Precipitation speed.
+ *  	: float & - Minimum distance.
+ *  	: float & - Maximum distance.
+ *  	: float & - Alpha.
+ *  	: float & - Brightness.
+ *  	: float & - Snow jitter.
+ *  	: float & - Rain length.
+ *  	: float & - Splash frequency.
+ *  	: float & - Splash radius.
+ *  	: float & - Splash height.
+ *  	: float & - Splash time.
+ *  	: cScrStr & - Precipitation bitmap.
+ *  	: cScrVec & - Wind velocity.
+ */
 	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,cScrStr &,cScrVec &) PURE;
+/*** SetWeather - Change the global weather parameters.
+ *  	: int - Precipitation type.
+ *  	: float - Precipitation frequency.
+ *  	: float - Precipitation speed.
+ *  	: float - Minimum distance.
+ *  	: float - Maximum distance.
+ *  	: float - Alpha.
+ *  	: float - Brightness.
+ *  	: float - Snow jitter.
+ *  	: float - Rain length.
+ *  	: float - Splash frequency.
+ *  	: float - Splash radius.
+ *  	: float - Splash height.
+ *  	: float - Splash time.
+ *  	: const char * - Precipitation bitmap.
+ *  	: const cScrVec & - Wind velocity.
+ */
 	STDMETHOD_(void,SetWeather)(int,float,float,float,float,float,float,float,float,float,float,float,float,const char *,const cScrVec &) PURE;
+/*** PortalRaycast - Check for terrain blocking two points.
+ *  	= Bool - True if terrain was hit.
+ *  	: const cScrVec & - Starting location.
+ *  	: const cScrVec & - Ending location.
+ *  	: cScrVec & - Location of terrain, if hit.
+ */
 	STDMETHOD_(Bool,PortalRaycast)(const cScrVec &,const cScrVec &,cScrVec &) PURE;
-	STDMETHOD_(int,ObjRaycast)(const cScrVec &,const cScrVec &,cScrVec &,object &,Bool,object,object) PURE;
+/*** ObjRaycast - Check for an object or terrain between two points.
+ *  	= int - Returns 0 if nothing is hit. 1 = terrain, 2 = object, 3 = AI
+ *  	: const cScrVec & - Starting location.
+ *  	: const cScrVec & - Ending location.
+ *  	: cScrVec & - Location where the object or terrain is hit, if any.
+ *  	: object & - The object or AI that was hit, if any.
+ *  	: eObjRaycast - What to do when there is a hit.
+ *  	: Bool - Ignore all AI if true.
+ *  	: object - An object to ignore, such as a source object.
+ *  	: object - Another object to ignore, such as a destination object.
+ */
+	STDMETHOD_(int,ObjRaycast)(const cScrVec &,const cScrVec &,cScrVec &,object &,eObjRaycast,Bool,object,object) PURE;
 };
 DEFINE_IIDSTRUCT(IEngineSrv,IID_IEngineScriptService);
 
@@ -2477,7 +2714,7 @@ interface IShockOverlaySrv : IScriptServiceBase
  *  	: const char * - The name of the bitmap file.
  *  	: const char * - Resource path to look for the file in. Such as "iface".
  */
-	STDMETHOD_(int,GetBitmap)(const char *,const char *path) PURE;
+	STDMETHOD_(int,GetBitmap)(const char *,const char *) PURE;
 /*** FlushBitmap - Release a bitmap.
  *  	: int - The bitmap handle.
  */
@@ -2670,15 +2907,51 @@ DEFINE_IIDSTRUCT(IShockOverlaySrv,IID_IShockOverlayScriptService);
 DECLARE_GUID(IVersionScriptService);
 interface IVersionSrv : IScriptServiceBase
 {
+/*** GetAppName - Get the name of the host application.
+ *  	: Bool - Return a shorter name if true.
+ *  	: cScrStr & - The address of a string that is filled with the application name.
+ */
 	STDMETHOD_(void,GetAppName)(Bool,cScrStr &) PURE;
+/*** GetVersion - Get the version number of the host application.
+ *  	: int & - Major version number.
+ *  	: int & - Minor version number.
+ */
 	STDMETHOD_(void,GetVersion)(int &,int &) PURE;
+/*** IsEditor - Check if the host application is DromEd.
+ *  	= int - Returns 0 when called from the game. 1 = DromEd in edit mode, 2 = DromEd in game mode.
+ */
 	STDMETHOD_(int,IsEditor)(void) PURE;
+/*** GetGame - Get the type of the game. Either "dark" or "shock".
+ *  	: cScrStr & - A string that will be set to the game type.
+ */
 	STDMETHOD_(void,GetGame)(cScrStr &) PURE;
+/*** GetGamsys - Get the filename of the current gamesys.
+ *  	: cScrStr & - A string that will be set to the GAM name.
+ */
 	STDMETHOD_(void,GetGamsys)(cScrStr &) PURE;
+/*** GetMap - Get the filename of the current mission.
+ *  	: cScrStr & - A string that will be set to the MIS name.
+ */
 	STDMETHOD_(void,GetMap)(cScrStr &) PURE;
+/*** GetCurrentFM - Get the name of the current fan mission.
+ *  	= long - Returns 0 if no FM is active.
+ *  	: cScrStr & - A string that will be set to the name of the FM.
+ */
 	STDMETHOD(GetCurrentFM)(cScrStr &) PURE;
+/*** GetCurrentFMPath - Get the directory name of the current fan mission.
+ *  	= long - Returns 0 if no FM is active.
+ *  	: cScrStr & - A string that will be set to the FM path.
+ */
 	STDMETHOD(GetCurrentFMPath)(cScrStr &) PURE;
+/*** FMizeRelativePath - Add the FM directory to a relative path name.
+ *  	: const char * - A file or directory name, relative to the FM path.
+ *  	: cScrStr & - A string that will be set to the name joined to the FM path.
+ */
 	STDMETHOD_(void,FMizeRelativePath)(const char *,cScrStr &) PURE;
+/*** FMizePath - Add the FM directory to a relative or absolute path name.
+ *  	: const char * - A file or directory name.
+ *  	: cScrStr & - A string that will be set to the name joined to the FM path. If the name is an absolute path, it is returned unmodified.
+ */
 	STDMETHOD_(void,FMizePath)(const char *,cScrStr &) PURE;
 };
 DEFINE_IIDSTRUCT(IVersionSrv,IID_IVersionScriptService);
