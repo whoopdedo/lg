@@ -200,7 +200,7 @@ IID_SRCS = \
 	iids/shockaiscriptservice.cpp iids/shockbaseclientsloop.cpp iids/shockcamera.cpp \
 	iids/shockgameclientsloop.cpp iids/shockgamescriptservice.cpp \
 	iids/shockloadingloop.cpp iids/shockmasterloop.cpp iids/shockobjscriptservice.cpp \
-	iids/shockoverlayscriptservice iids/shockplayer.cpp \
+	iids/shockoverlayscriptservice.cpp iids/shockplayer.cpp \
 	iids/shockpsiscriptservice.cpp iids/shockrangedproperty.cpp \
 	iids/shockrender2loop.cpp iids/shockrenderloop.cpp iids/shocksimloop.cpp \
 	iids/shockweaponscriptservice.cpp iids/simfinishloop.cpp iids/simmanager.cpp \

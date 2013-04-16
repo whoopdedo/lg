@@ -2365,7 +2365,7 @@ enum eStyleColorKind
 	kStyleColorXOR,
 	kStyleColorBevelLight,
 	kStyleColorBevelDark
-}
+};
 DECLARE_GUID(IDarkOverlayScriptService);
 interface IDarkOverlaySrv : IScriptServiceBase
 {
@@ -2663,7 +2663,7 @@ enum eShockCursorMode
 	kSCM_Look,
 	kSCM_Psi,
 	kSCM_Split
-}
+};
 interface IShockOverlayHandler : IDarkOverlayHandler
 {
 /*** CanEnableElement - Query the handler if an overlay panel should be displayed.
@@ -2696,7 +2696,7 @@ interface IShockOverlayHandler : IDarkOverlayHandler
  *  	: Bool - Set to true on the first drag event, then false on subsequent events until the mouse button is released.
  *  	: eShockCursorMode - The cursor interaction mode.
  */
-	STDMETHOD_(Bool,MouseDragDrop)(int,int,Bool,eShockCursorMode)
+	STDMETHOD_(Bool,MouseDragDrop)(int,int,Bool,eShockCursorMode) PURE;
 };
 DECLARE_GUID(IShockOverlayScriptService);
 interface IShockOverlaySrv : IScriptServiceBase
