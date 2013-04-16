@@ -2652,6 +2652,11 @@ interface IEngineSrv : IScriptServiceBase
  *  	: object - Another object to ignore, such as a destination object.
  */
 	STDMETHOD_(int,ObjRaycast)(const cScrVec &,const cScrVec &,cScrVec &,object &,eObjRaycast,Bool,object,object) PURE;
+/*** SetEnvMapZone - Change the environment texture map for a zone.
+ *  	: int - Environment zone ID. (0 - 63)
+ *  	: const char * - Name of the new texture, or NULL.
+ */
+	STDMETHOD_(void,SetEnvMapZone)(int,const char *) PURE;
 };
 DEFINE_IIDSTRUCT(IEngineSrv,IID_IEngineScriptService);
 
