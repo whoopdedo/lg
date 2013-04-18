@@ -9,6 +9,10 @@
 #pragma once
 #endif
 
+#if __cplusplus < 201103L
+#define constexpr const
+#endif
+
 #ifdef _MSC_VER
 
 // "__thiscall" is not, as I was led to believe, valid syntax.
