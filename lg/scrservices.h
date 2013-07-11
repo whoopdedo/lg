@@ -500,6 +500,7 @@ interface IDebugScrSrv : IScriptServiceBase
  *  	: ...
  */
 	STDMETHOD(Log)(const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &) PURE;
+#endif
 };
 DEFINE_IIDSTRUCT(IDebugScrSrv,IID_IDebugScriptService);
 
@@ -2614,7 +2615,7 @@ interface IEngineSrv : IScriptServiceBase
  *  	: cScrStr & - Precipitation bitmap.
  *  	: cScrVec & - Wind velocity.
  */
-	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,cScrStr &,cScrVec &) PURE;
+	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,const char* &,cScrVec &) PURE;
 /*** SetWeather - Change the global weather parameters.
  *  	: int - Precipitation type.
  *  	: float - Precipitation frequency.
