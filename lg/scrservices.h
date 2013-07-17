@@ -2612,10 +2612,10 @@ interface IEngineSrv : IScriptServiceBase
  *  	: float & - Splash radius.
  *  	: float & - Splash height.
  *  	: float & - Splash time.
- *  	: const char *& - Precipitation bitmap.
+ *  	: cScrStr & - Precipitation bitmap.
  *  	: cScrVec & - Wind velocity.
  */
-	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,const char *&,cScrVec &) PURE;
+	STDMETHOD_(void,GetWeather)(int &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,float &,cScrStr &,cScrVec &) PURE;
 /*** SetWeather - Change the global weather parameters.
  *  	: int - Precipitation type.
  *  	: float - Precipitation frequency.
