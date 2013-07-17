@@ -208,6 +208,7 @@ public:
 		{ }
 	cScrStr (const char* psz)
 		{ m_pszData = IF_NOT(psz, _ChNil); }
+	cScrStr (uint sz);
 
 	cScrStr& operator = (const char* psz)
 		{ m_pszData = IF_NOT(psz, _ChNil); return *this;}
@@ -220,6 +221,10 @@ public:
 	// No checking is performed, so be absolutely sure when you call this.
 	void Free();
 	void Copy(const char* psz);
+	// Set the string pointer to NULL before using it as
+	// an output parameter.
+	void MakeNull()
+		{ m_pszData = NULL; }
 
 	Bool IsEmpty(void) const
 		{ return *m_pszData == 0; }
