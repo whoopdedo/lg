@@ -500,6 +500,7 @@ interface IDebugScrSrv : IScriptServiceBase
  *  	: ...
  */
 	STDMETHOD(Log)(const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &,const cScrStr &) PURE;
+#endif
 };
 DEFINE_IIDSTRUCT(IDebugScrSrv,IID_IDebugScriptService);
 
