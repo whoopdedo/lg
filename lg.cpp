@@ -520,8 +520,9 @@ const cScrStr cScrStr::Null;
  */
 cScrStr::cScrStr(uint sz)
 {
-	m_pszData = reinterpret_cast<char*>(g_pMalloc->Alloc(sz+1));
-	m_pszData[0] = '\0';
+	char* psz = reinterpret_cast<char*>(g_pMalloc->Alloc(sz+1));
+	m_pszData = psz;
+	psz[0] = '\0';
 }
 
 void cScrStr::Free()
