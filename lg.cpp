@@ -1346,10 +1346,10 @@ cDynArrayBase::~cDynArrayBase()
 
 bool SService_is_null(IUnknown* __p)
 {
-	IUnknown* pTemp;
-	if (E_NOINTERFACE != __p->QueryInterface(IID_INullScriptService, reinterpret_cast<void**>(&pTemp)))
+	void* pTemp;
+	if (E_NOINTERFACE != __p->QueryInterface(IID_INullScriptService, &pTemp))
 	{
-		pTemp->Release();
+		reinterpret_cast<IUnknown*>(pTemp)->Release();
 		return true;
 	}
 	return false;
