@@ -10,7 +10,9 @@
 #endif
 
 #if __cplusplus < 201103L
+#ifndef __GXX_EXPERIMENTAL_CXX0X__
 #define constexpr const
+#endif
 #endif
 
 #ifdef _MSC_VER
@@ -26,7 +28,9 @@
 
 #else // !_MSC_VER
 
+#ifndef __thiscall
 #define __thiscall
+#endif
 
 #define SPEC_THROW(x)	throw(x)
 #define NO_THROW throw()
