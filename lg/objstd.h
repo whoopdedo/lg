@@ -88,6 +88,9 @@ inline bool operator!=(const GUID& g1, const GUID& g2)
 #define DECLARE_GUID(I)	EXTERN_C const GUID IID_##I
 /* system headers may add extra attributes that aren't important */
 #ifdef __cplusplus
+#ifndef WINAPI
+#define WINAPI __stdcall
+#endif
 #undef DECLARE_INTERFACE
 #undef DECLARE_INTERFACE_
 #define DECLARE_INTERFACE(I)	interface I

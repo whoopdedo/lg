@@ -219,7 +219,7 @@ DEFINE_IIDSTRUCT(IBowSrv,IID_IBowScriptService);
 DECLARE_GUID(ICameraScriptService);
 interface ICameraSrv : IScriptServiceBase
 {
-#if (_DARKGAME == 2)
+#if (_DARKGAME == 2) || ((_DARKGAME == 1) && defined(_NEWDARK))
 /*** StaticAttach - Attach camera to object. Do not allow freelook.
  *  	= long - Returns 0.
  *  	: object - Object to attach to.
@@ -527,7 +527,7 @@ interface IDoorSrv : IScriptServiceBase
  *  	: object - The door to open/close.
  */
 	STDMETHOD_(Bool,ToggleDoor)(object) PURE;
-#if (_DARKGAME == 2)
+#if (_DARKGAME == 2) || ((_DARKGAME == 1) && defined(_NEWDARK))
 /*** SetBlocking - Set whether a door can block sound.
  *  	= Bool - True if the object is a door.
  *  	: object - The door to change.

@@ -630,7 +630,9 @@ public:
 	//	{ Set(bval); return *this; }
 	//cMultiParm& operator= (const true_bool& bval)
 	//	{ Set(static_cast<bool>(bval)); return *this; }
-	cMultiParm& operator= (sMultiParm& mp);
+	cMultiParm& operator= (const sMultiParm& mp);
+	cMultiParm& operator= (const cMultiParm& mp)
+		{ return *this = static_cast<const sMultiParm&> (mp); }
 	cMultiParm& operator= (const cScrStr& str);
 
 	operator int () const;

@@ -340,8 +340,8 @@ DECLARE_INTERFACE_(IScriptMan,IUnknown)
  *  	: sMultiParm * - The return result of the message. This is the pRet argument in ReceiveMessage. A string or vector type should be freed by the caller.
  */
 	STDMETHOD(SendMessage)(THIS_ sScrMsg *,sMultiParm *) PURE;
-/*** KillTimedMessage - Abort a message that was sent with SetTimedMessage2.
- *  	: tScrTimer - The pointer returned from SetTimedMessage2.
+/*** KillTimedMessage - Abort a message that was sent with SetTimedMessage or SetTimedMessage2.
+ *  	: tScrTimer - The pointer returned from SetTimedMessage or SetTimedMessage2.
  */
 	STDMETHOD_(void,KillTimedMessage)(THIS_ tScrTimer) PURE;
 	STDMETHOD_(int,PumpMessages)(THIS) PURE;
