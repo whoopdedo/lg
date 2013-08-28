@@ -195,7 +195,7 @@ cMultiParm& cMultiParm::operator= (const mxs_vector& rVectorval)
 	return *this;
 }
 
-cMultiParm& cMultiParm::operator= (sMultiParm& mp)
+cMultiParm& cMultiParm::operator= (const sMultiParm& mp)
 {
 	char* pNew;
 	eMultiParmType newtype = mp.type;
