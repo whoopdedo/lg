@@ -16,14 +16,14 @@ uint cRefCnt::IncRef()
 
 uint cRefCnt::DecRef()
 {
-#ifdef _MT
-	uint ref = InterlockedDecrement((LONG*)&m_iRef);
-	if (ref < 0)
-		m_iRef = 0;
-#else
 	uint ref = m_iRef;
-	if (ref <= 0) return -1;
-	m_iRef = --ref;
+	if (ref > 0)
+	{
+#ifdef _MT
+		ref = InterlockedDecrement((LONG*)&m_iRef);
+#else
+		m_iRef = --ref;
 #endif
+	}
 	return ref;
 }
