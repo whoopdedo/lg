@@ -208,7 +208,8 @@ public:
 		{ }
 	cScrStr (const char* psz)
 		{ m_pszData = IF_NOT(psz, _ChNil); }
-	cScrStr (uint sz);
+	cScrStr (const cMultiParm& mp);
+	explicit cScrStr (uint sz);
 
 	cScrStr& operator = (const char* psz)
 		{ m_pszData = IF_NOT(psz, _ChNil); return *this;}
@@ -671,6 +672,8 @@ public:
 	static const cMultiParm Undef;
 };
 
+inline cScrStr::cScrStr (const cMultiParm& mp)
+	{ m_pszData = static_cast<const char*>(mp); }
 
 interface IScript;
 typedef IScript* (__cdecl *ScriptFactoryProc)(const char*, int);
