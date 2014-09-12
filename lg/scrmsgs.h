@@ -36,6 +36,7 @@
 
 struct sScrMsgBase : IUnknown
 {
+	virtual ~sScrMsgBase() { };
 	sScrMsgBase() { };
 	STDMETHOD(QueryInterface)(REFIID riid, void** ppv);
 	STDMETHOD_(ulong,AddRef)() { return m_iRef.IncRef(); };
@@ -46,7 +47,7 @@ private:
 
 // These are __thiscall, not __stdcall
 // Which means they are subject to myriad incompatibilities
-#ifdef _MSC_VER
+#if _MSCOMPAT
 struct sPersistent
 {
 	virtual ~sPersistent()
@@ -67,7 +68,7 @@ struct sPersistent_vtable
 };
 #endif // _MSC_VER
 
-#ifdef _MSC_VER
+#if _MSCOMPAT
 struct sScrMsg : sScrMsgBase, sPersistent
 {
 #else
@@ -101,7 +102,7 @@ struct sScrMsg : sScrMsgBase
 		return "sScrMsg";
 	}
 
-#ifndef _MSC_VER
+#if !_MSCOMPAT
 	// Functions that make sScrMsg work, against all odds.
 	int Persistent_Persistence(void);
 	const char* Persistent_GetName(void) const;

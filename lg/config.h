@@ -18,6 +18,7 @@
 // "__thiscall" is not, as I was led to believe, valid syntax.
 // Just have to rely on it being the default.
 #define __thiscall
+#define _MSCOMPAT 1
 
 // MSVC doesn't know what the hell a 'throw' function spec is
 
@@ -39,6 +40,10 @@
 
 #define IF_NOT(a,b)	((a)?:(b))
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
+#define _MSCOMPAT 1
+#endif
+
 #else // !__GNUC__
 
 #ifndef __attribute__
@@ -51,6 +56,10 @@
 
 #ifdef __BORLANDC__
 
+#endif
+
+#ifndef _MSCOMPAT
+#define _MSCOMPAT 0
 #endif
 
 #endif // _LG_CONFIG_H
