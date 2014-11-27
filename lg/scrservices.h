@@ -239,6 +239,22 @@ interface ICameraSrv : IScriptServiceBase
  *  	= long - Returns 0.
  */
 	STDMETHOD(ForceCameraReturn)(void) PURE;
+/*** GetCameraParent - Return the object the camera is currently attached to.
+ *	= object - The camera-attached object. Aggregate return.
+ */
+	STDMETHOD_(object*,GetCameraParent)(object&) PURE;
+/*** IsRemote - Check if the camera is attached to another object than Player.
+ *	= true_bool - True if GetCameraParent() != PlayerObject().
+ */
+	STDMETHOD_(true_bool*,IsRemote)(true_bool&) PURE;
+/*** GetPosition - Get the location of the camera.
+ *	= mxs_vector - The camera-attached object's XYZ vector. Aggregate return.
+ */
+	STDMETHOD_(mxs_vector*,GetPosition)(mxs_vector&) PURE;
+/*** GetFacing - Get the rotation of the camera.
+ *	= mxs_vector - The camera-attached object's HPB vector as degrees. Aggregate return.
+ */
+	STDMETHOD_(mxs_vector*,GetFacing)(mxs_vector&) PURE;
 #endif
 };
 DEFINE_IIDSTRUCT(ICameraSrv,IID_ICameraScriptService);
