@@ -19,6 +19,8 @@
  */
 
 #ifdef __GNUC__
+/* GCC 4.6 added support for MSVC calling convention. */
+#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
 typedef void (*pfScriptCall)(IScript*);
 
 #define _DoScriptCall(__Fn,__p) \
@@ -60,6 +62,17 @@ typedef void (*pfScriptCall)(IScript*);
 		: "=a" (__r) : "r" (__pf) , "g" (__p) , "g" (__a) , "g" (__b) : "ecx" , "memory" ); \
 	__r; \
 })
+#else
+
+#define _DoScriptCall(__Fn,__p) ((__p)->__Fn())
+#define _DoScriptCall1(__Fn,__p,__a) ((__p)->__Fn((__a)))
+#define _DoScriptCall1a(__Fn,__p,__a) ((__p)->__Fn((__a)))
+#define _DoScriptCall2(__Fn,__p,__a,__b) ((__p)->__Fn((__a),(__b)))
+#define _DoScriptCall2a(__Fn,__p,__a,__b) ((__p)->__Fn((__a),(__b)))
+#define _DoScriptCallRet(__Fn,__p,__r) (__r = (__p)->__Fn())
+#define _DoScriptCallRet1(__Fn,__p,__r,__a) (__r = (__p)->__Fn((__a)))
+#define _DoScriptCallRet2(__Fn,__p,__r,__a,__b) (__r = (__p)->__Fn((__a),(__b)))
+
 #endif
 #ifdef _MSC_VER
 /* MSVC++ should be able to call __thiscall functions directly. */

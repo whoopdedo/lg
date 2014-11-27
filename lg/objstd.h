@@ -34,6 +34,7 @@ typedef unsigned long	DWord;
 
 #define LG_DECLARE_HANDLE(T)	typedef struct T##__{} *T
 
+#include <windef.h>
 #include <basetyps.h>
 /*
 #define interface struct

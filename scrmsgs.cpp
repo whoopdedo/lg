@@ -41,7 +41,7 @@ extern IMalloc* g_pMalloc;
  * they appear to work just fine.
  */
 
-#ifndef _MSC_VER
+#if !_MSCOMPAT
 ////////////////////
 // sPersistent hack
 ////////////////////
@@ -119,12 +119,12 @@ sScrMsg::~sScrMsg()
 sScrMsg::sScrMsg()
 	: from(0), to(0), message(NULL), time(0), flags(0)
 {
-#ifndef _MSC_VER
+#if !_MSCOMPAT
 	persistent_hack = &hackPersistent_vtable;
 #endif
 }
 
-#ifndef _MSC_VER
+#if !_MSCOMPAT
 int sScrMsg::Persistent_Persistence(void)
 {
 	register int retval;

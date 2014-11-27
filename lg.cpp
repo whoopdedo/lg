@@ -509,6 +509,22 @@ bool cMultiParm::operator== (const cMultiParm& rhs) const
 const char* cScrStr::_ChNil = "";
 const cScrStr cScrStr::Null;
 
+/* Why does this constructor exist?
+ * Although strings are supposed to be immutable, some pathological uses
+ * ignore that. The default _ChNil value is not safe when a string may
+ * be written outside the module that created it. This is one way to
+ * handle the situation. The string is allocated so the external module
+ * may safely use Free (assuming it uses the same heap).
+ *
+ * Alternately, you can set the pointer to NULL with cScrStr::MakeNull
+ */
+cScrStr::cScrStr(uint sz)
+{
+	char* psz = reinterpret_cast<char*>(g_pMalloc->Alloc(sz+1));
+	m_pszData = psz;
+	psz[0] = '\0';
+}
+
 void cScrStr::Free()
 {
 	if (m_pszData && m_pszData != _ChNil)
