@@ -239,22 +239,28 @@ interface ICameraSrv : IScriptServiceBase
  *  	= long - Returns 0.
  */
 	STDMETHOD(ForceCameraReturn)(void) PURE;
+#ifdef _NEWDARK
 /*** GetCameraParent - Return the object the camera is currently attached to.
+ *	! Implemented by NewDark version 1.22 or later only.
  *	= object - The camera-attached object. Aggregate return.
  */
 	STDMETHOD_(object*,GetCameraParent)(object&) PURE;
 /*** IsRemote - Check if the camera is attached to another object than Player.
+ *	! Implemented by NewDark version 1.22 or later only.
  *	= true_bool - True if GetCameraParent() != PlayerObject().
  */
 	STDMETHOD_(true_bool*,IsRemote)(true_bool&) PURE;
 /*** GetPosition - Get the location of the camera.
+ *	! Implemented by NewDark version 1.22 or later only.
  *	= mxs_vector - The camera-attached object's XYZ vector. Aggregate return.
  */
 	STDMETHOD_(mxs_vector*,GetPosition)(mxs_vector&) PURE;
 /*** GetFacing - Get the rotation of the camera.
+ *	! Implemented by NewDark version 1.22 or later only.
  *	= mxs_vector - The camera-attached object's HPB vector as degrees. Aggregate return.
  */
 	STDMETHOD_(mxs_vector*,GetFacing)(mxs_vector&) PURE;
+#endif
 #endif
 };
 DEFINE_IIDSTRUCT(ICameraSrv,IID_ICameraScriptService);
