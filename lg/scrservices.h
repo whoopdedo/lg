@@ -252,14 +252,14 @@ interface ICameraSrv : IScriptServiceBase
 	STDMETHOD_(true_bool*,IsRemote)(true_bool&) PURE;
 /*** GetPosition - Get the location of the camera.
  *	! Implemented by NewDark version 1.22 or later only.
- *	= mxs_vector - The camera-attached object's XYZ vector. Aggregate return.
+ *	= cScrVec - The camera-attached object's XYZ vector. Aggregate return.
  */
-	STDMETHOD_(mxs_vector*,GetPosition)(mxs_vector&) PURE;
+	STDMETHOD_(cScrVec*,GetPosition)(cScrVec&) PURE;
 /*** GetFacing - Get the rotation of the camera.
  *	! Implemented by NewDark version 1.22 or later only.
- *	= mxs_vector - The camera-attached object's HPB vector as degrees. Aggregate return.
+ *	= cScrVec - The camera-attached object's HPB vector as degrees. Aggregate return.
  */
-	STDMETHOD_(mxs_vector*,GetFacing)(mxs_vector&) PURE;
+	STDMETHOD_(cScrVec*,GetFacing)(cScrVec&) PURE;
 #endif
 #endif
 };
