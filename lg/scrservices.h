@@ -241,25 +241,37 @@ interface ICameraSrv : IScriptServiceBase
 	STDMETHOD(ForceCameraReturn)(void) PURE;
 #ifdef _NEWDARK
 /*** GetCameraParent - Return the object the camera is currently attached to.
- *	! Implemented by NewDark version 1.22 or later only.
- *	= object - The camera-attached object. Aggregate return.
+ *  	! Implemented by NewDark version 1.22 or later only.
+ *  	= object - The camera-attached object. Aggregate return.
  */
 	STDMETHOD_(object*,GetCameraParent)(object&) PURE;
 /*** IsRemote - Check if the camera is attached to another object than Player.
- *	! Implemented by NewDark version 1.22 or later only.
- *	= true_bool - True if GetCameraParent() != PlayerObject().
+ *  	! Implemented by NewDark version 1.22 or later only.
+ *  	= true_bool - True if GetCameraParent() != PlayerObject().
  */
 	STDMETHOD_(true_bool*,IsRemote)(true_bool&) PURE;
 /*** GetPosition - Get the location of the camera.
- *	! Implemented by NewDark version 1.22 or later only.
- *	= cScrVec - The camera-attached object's XYZ vector. Aggregate return.
+ *  	! Implemented by NewDark version 1.22 or later only.
+ *  	= cScrVec - The camera-attached object's XYZ vector. Aggregate return.
  */
 	STDMETHOD_(cScrVec*,GetPosition)(cScrVec&) PURE;
 /*** GetFacing - Get the rotation of the camera.
- *	! Implemented by NewDark version 1.22 or later only.
- *	= cScrVec - The camera-attached object's HPB vector as degrees. Aggregate return.
+ *  	! Implemented by NewDark version 1.22 or later only.
+ *  	= cScrVec - The camera-attached object's HPB vector as degrees. Aggregate return.
  */
 	STDMETHOD_(cScrVec*,GetFacing)(cScrVec&) PURE;
+/*** CameraToWorld - Transform coordinates relative to the location and rotation of the camera.
+ *  	! Implemented by NewDark version 1.23 or later only.
+ *  	= cScrVec - World coordinates of the input vector. Aggregate return.
+ *  	: const cScrVec & - Relative location. i.e. (1,0,0) is one unit in front of the camera.
+ */
+	STDMETHOD_(cScrVec*,CameraToWorld)(cScrVec&,const cScrVec &) PURE;
+/*** WorldToCamera - Get the relative coordinates from the camera to a location.
+ *  	! Implemented by NewDark version 1.23 or later only.
+ *  	= cScrVec - Camera coordinates of the input vector. Aggregate return.
+ *  	: const cScrVec & - Absolute location in the world.
+ */
+	STDMETHOD_(cScrVec*,WorldToCamera)(cScrVec&,const cScrVec &) PURE;
 #endif
 #endif
 };
@@ -919,6 +931,13 @@ DEFINE_IIDSTRUCT(INetworkingSrv,IID_INetworkingScriptService);
 
 DECLARE_GUID(INullScriptService);
 
+enum RelTransformType {
+	RelObject,
+	RelJoint,
+	RelVHot,
+	RelSubObject,
+	RelSubPhysModel
+};
 DECLARE_GUID(IObjectScriptService);
 interface IObjectSrv : IScriptServiceBase
 {
@@ -1042,7 +1061,7 @@ interface IObjectSrv : IScriptServiceBase
  *  	: int - The object to center the search about.
  *  	: const char * - The name of an archetype that the located object should inherit from.
  */
-	STDMETHOD_(object*,FindClosestObjectNamed)(object &, int,const char *) PURE;
+	STDMETHOD_(object*,FindClosestObjectNamed)(object &,int,const char *) PURE;
 #endif
 /*** AddMetaPropertyToMany - Add a metaproperty to multiple objects.
  *  	= int - Number of objects affected.
@@ -1063,14 +1082,32 @@ interface IObjectSrv : IScriptServiceBase
 	STDMETHOD_(true_bool*,RenderedThisFrame)(true_bool &,object) PURE;
 #ifdef _NEWDARK
 #if (_DARKGAME == 3)
-	STDMETHOD_(object*,FindClosestObjectNamed)(object &, int,const char *) PURE;
+	STDMETHOD_(object*,FindClosestObjectNamed)(object &,int,const char *) PURE;
 #endif
 /*** ObjectToWorld - Translate a relative vector to absolute.
  *  	= cScrVec - The absolute position in world coordinates. Aggregate return.
  *  	: object - The object to measure from.
  *  	: const cScrVec & - Position relative to the location and rotation of the object.
  */
-	STDMETHOD_(cScrVec*,ObjectToWorld)(cScrVec &, object,const cScrVec &) PURE;
+	STDMETHOD_(cScrVec*,ObjectToWorld)(cScrVec &,object,const cScrVec &) PURE;
+/*** WorldToObject - Transform an absolute vector to relative.
+ *  	! Implemented by NewDark version 1.23 or later only.
+ *  	= cScrVec - Position relative to the location and rotation of the object. Aggregate return.
+ *  	: object - The object to measure from.
+ *  	: const cScrVec & - The absolute position in world coordinates.
+ */
+	STDMETHOD_(cScrVec*,WorldToObject)(cScrVec&,object,const cScrVec &) PURE;
+/*** CalcRelTransform - Get the location and rotation of an object relative to a base object.
+ *  	! Implemented by NewDark version 1.23 or later only.
+ *  	= true_bool - Aggregate return. (FIXME would this be false for anything other than invalid object?)
+ *  	: object - Base object to measure from.
+ *  	: object - Destination object.
+ *  	: cScrVec & - Relative location.
+ *  	: cScrVec & - Relative rotation.
+ *  	: int - Where to measure from on the base object. See enum RelTransformType.
+ *  	: int - Number of the submodel, vhot, or joint if applicable.
+ */
+	STDMETHOD_(true_bool*,CalcRelTransform)(true_bool&,object,object,cScrVec &,cScrVec &,int,int) PURE;
 #endif
 };
 DEFINE_IIDSTRUCT(IObjectSrv,IID_IObjectScriptService);
@@ -1114,7 +1151,7 @@ interface IPhysSrv : IScriptServiceBase
  *  	: object - Object to launch from.
  *  	: object - Archetype to emit.
  *  	: float - Velocity scale of projectile.
- *  	: int - 1=ZeroVel, 2=PushOut, 4=RelativeVelocity, 8=Gravity, 512=TellAI, 1024=NoPhysics. 
+ *  	: int - 1=ZeroVel, 2=PushOut, 4=RelativeVelocity, 8=Gravity, 512=TellAI, 1024=NoPhysics.
  *  	: const cScrVec & - Initial velocity. Will be added to the velocity inherited from the archetype or emitter.
  */
 	STDMETHOD_(object*,LaunchProjectile)(object &,object,object,float,int,const cScrVec &) PURE;
@@ -2566,8 +2603,8 @@ interface IEngineSrv : IScriptServiceBase
  */
 	STDMETHOD_(Bool,ConfigGetRaw)(const char *,cScrStr &) PURE;
 /*** BindingGetFloat - Return the floating-point value of a key-binding variable.
- *      = float - The value of the variable.
- *      : const char * - The name of the variable.
+ *  	= float - The value of the variable.
+ *  	: const char * - The name of the variable.
  */
 	STDMETHOD_(float,BindingGetFloat)(const char *) PURE;
 /*** FindFileInPath - Search for a file in the paths defined by a config variable.
