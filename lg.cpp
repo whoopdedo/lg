@@ -36,7 +36,7 @@ cMultiParm::cMultiParm(const mxs_vector* pVectorval)
 	if (pVectorval)
 		*pVector = *pVectorval;
 	else
-		pVector->x = 0; pVector->y = 0; pVector->z = 0;
+		pVector->x = 0, pVector->y = 0, pVector->z = 0;
 }
 
 cMultiParm::cMultiParm(const mxs_vector& rVectorval)
@@ -76,7 +76,7 @@ cMultiParm::cMultiParm(const sMultiParm& rcpy)
 		if (rcpy.pVector)
 			pVector = rcpy.pVector;
 		else
-			pVector->x = 0; pVector->y = 0; pVector->z = 0;
+			pVector->x = 0, pVector->y = 0, pVector->z = 0;
 		break;
 	default:
 		type = kMT_Undef;
@@ -162,7 +162,7 @@ cMultiParm& cMultiParm::operator= (const mxs_vector* pVectorval)
 		if (pVectorval)
 			*pVector = *pVectorval;
 		else
-			pVector->x = 0; pVector->y = 0; pVector->z = 0;
+			pVector->x = 0, pVector->y = 0, pVector->z = 0;
 	}
 	else
 	{
@@ -170,7 +170,7 @@ cMultiParm& cMultiParm::operator= (const mxs_vector* pVectorval)
 		if (pVectorval)
 			*pVectornew = *pVectorval;
 		else
-			pVectornew->x = 0; pVectornew->y = 0; pVectornew->z = 0;
+			pVectornew->x = 0, pVectornew->y = 0, pVectornew->z = 0;
 		Unset();
 		pVector = pVectornew;
 		type = kMT_Vector;
