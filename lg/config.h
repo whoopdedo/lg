@@ -9,8 +9,23 @@
 #pragma once
 #endif
 
-#if __cplusplus < 201103L && !defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if __cplusplus >= 201103L
+
+#define SPEC_THROW(x)	noexcept(false)
+#define NO_THROW noexcept
+
+#else
+
+#ifdef _MSC_VER
+#define SPEC_THROW(x)	throw(...)
+#define NO_THROW throw()
+#else
+#define SPEC_THROW(x)	throw(x)
+#define NO_THROW throw()
+#endif
+
 #define constexpr const
+
 #endif
 
 #ifdef _MSC_VER
@@ -20,19 +35,11 @@
 #define __thiscall
 #define _MSCOMPAT 1
 
-// MSVC doesn't know what the hell a 'throw' function spec is
-
-#define SPEC_THROW(x)	throw(...)
-#define NO_THROW throw()
-
 #else // !_MSC_VER
 
 #ifndef __thiscall
 #define __thiscall
 #endif
-
-#define SPEC_THROW(x)	throw(x)
-#define NO_THROW throw()
 
 #endif // _MSC_VER
 
