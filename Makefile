@@ -5,25 +5,24 @@
 .SUFFIXES: .o .cpp
 
 srcdir = .
+bindir ?= bin
+libdir ?= .
 
-SH = sh
+SH = bash
 
-CC = g++
-AR = ar
-DLLWRAP = dllwrap
+PLAT ?=
+CC = $(PLAT)g++
+AR = $(PLAT)ar
 
 # _DARKGAME is not used here. The implementation of lgLib is universal
 DEFINES = -DWINVER=0x0400 -D_WIN32_WINNT=0x0400 -DWIN32_LEAN_AND_MEAN
 
 ARFLAGS = rc
-LDFLAGS = -mwindows -L.
-LIBS = -luuid
-INCLUDEDIRS = -I. -I$(srcdir)
+
+INCLUDEDIRS = -I$(srcdir)
 # If you care for this... # -Wno-unused-variable
 # A lot of the callbacks have unused parameters, so I turn that off.
 CXXFLAGS =  -W -Wall -Wno-unused-parameter -masm=intel $(INCLUDEDIRS)
-LDFLAGS = -mwindows -L. -llg
-DLLFLAGS = --def script.def --add-underscore --target i386-mingw32
 
 ifdef DEBUG
 CXXDEBUG = -g -DDEBUG
@@ -226,18 +225,21 @@ IID_SRCS = \
 	iids/weaponscriptservice.cpp iids/weaponskillsproperty.cpp iids/weatherproperty.cpp \
 	iids/winapp.cpp iids/winappadvisesink.cpp iids/windisplaydevice.cpp iids/winshell.cpp \
 	iids/wrloop.cpp
-IID_OBJS = $(IID_SRCS:%.cpp=%.o)
+IID_OBJS = $(IID_SRCS:iids/%.cpp=$(bindir)/%.o)
 
-LG_LIB = liblg.a
-LG_OBJS = lg.o scrmsgs.o refcnt.o iids.o
+LG_LIB = $(libdir)/liblg.a
+LG_OBJS = $(bindir)/lg.o $(bindir)/scrmsgs.o $(bindir)/refcnt.o $(bindir)/iids.o
 
-LG_LIBD = liblg-d.a
-LG_OBJSD = lg-d.o scrmsgs-d.o refcnt-d.o iids.o
+LG_LIBD = $(libdir)/liblg-d.a
+LG_OBJSD = $(bindir)/lg-d.o $(bindir)/scrmsgs-d.o $(bindir)/refcnt-d.o $(bindir)/iids.o
 
-%.o: %.cpp
+$(bindir)/%.o: iids/%.cpp
 	$(CC) $(CXXFLAGS) $(CXXDEBUG) $(DEFINES) -o $@ -c $<
 
-%-d.o: %.cpp
+$(bindir)/%.o: %.cpp
+	$(CC) $(CXXFLAGS) $(CXXDEBUG) $(DEFINES) -o $@ -c $<
+
+$(bindir)/%-d.o: %.cpp
 	$(CC) $(CXXFLAGS) $(CXXDEBUG) $(DEFINES) -o $@ -c $<
 
 
@@ -258,9 +260,10 @@ $(LG_LIBD): LDDEBUG = -g
 $(LG_LIBD): $(LG_OBJSD) $(IID_OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
-lg.o: lg.cpp $(LG_HEADERS)
-scrmsgs.o: scrmsgs.cpp lg/scrmsgs.h lg/defs.h lg/types.h lg/interfaceimp.h lg/interface.h lg/iiddef.h lg/objstd.h lg/config.h
-refcnt.o: refcnt.cpp lg/interfaceimp.h lg/iiddef.h lg/objstd.h lg/config.h
-lg-d.o: lg.cpp $(LG_HEADERS)
-scrmsgs-d.o: scrmsgs.cpp lg/scrmsgs.h lg/defs.h lg/types.h lg/interfaceimp.h lg/interface.h lg/iiddef.h lg/objstd.h lg/config.h
-refcnt-d.o: refcnt.cpp lg/interfaceimp.h lg/iiddef.h lg/objstd.h lg/config.h
+$(bindir)/lg.o: lg.cpp $(LG_HEADERS)
+$(bindir)/scrmsgs.o: scrmsgs.cpp lg/scrmsgs.h lg/defs.h lg/types.h lg/interfaceimp.h lg/interface.h lg/iiddef.h lg/objstd.h lg/config.h
+$(bindir)/refcnt.o: refcnt.cpp lg/interfaceimp.h lg/iiddef.h lg/objstd.h lg/config.h
+$(bindir)/lg-d.o: lg.cpp $(LG_HEADERS)
+$(bindir)/scrmsgs-d.o: scrmsgs.cpp lg/scrmsgs.h lg/defs.h lg/types.h lg/interfaceimp.h lg/interface.h lg/iiddef.h lg/objstd.h lg/config.h
+$(bindir)/refcnt-d.o: refcnt.cpp lg/interfaceimp.h lg/iiddef.h lg/objstd.h lg/config.h
+$(bindir)/iids.o: lg/iids.h lg/objstd.h lg/config.h
